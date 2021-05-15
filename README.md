@@ -31,6 +31,8 @@ Simply throw it into the `extensions` folder in WebWatcher and enable it.
 To enable an extension, you can either run WebWatcher so it generates the entry in `.config/settings.cfg.json` and set it to `true`
 Alternatively, you can add the entry yourself by adding the `.dll`'s name manually
 
+It's preferable to compile in Release mode, as this allows the compiler to optimize code
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
