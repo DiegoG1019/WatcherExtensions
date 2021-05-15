@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebWatcherLibrary\WebWatcherLibrary.csproj" />
-    <ProjectReference Include="..\WebWatcher\WebWatcher.csproj" />
+    <ProjectReference Include="..\..\WebWatcher\WebWatcher\WebWatcher.csproj" />
   </ItemGroup>
 
 </Project>
