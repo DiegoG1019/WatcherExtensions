@@ -21,6 +21,7 @@ namespace UrbeWatcher
 
         public TimeSpan Interval { get; } = TimeSpan.FromMinutes(10);
 
+        private static bool WasAvailable = false;
         public async Task Check()
         {
             Log.Information("Checking Urbe for availability");
@@ -30,13 +31,17 @@ namespace UrbeWatcher
                 HttpClient client = new();
                 var checkingResponse = await client.GetAsync(UrbeURL);
 
-                if (checkingResponse.IsSuccessStatusCode)
+                if (checkingResponse.IsSuccessStatusCode && !WasAvailable)
                 {
                     Log.Debug("Urbe is available");
+                    WasAvailable = true;
                     OutputBot.SendTextMessage(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now:g}");
                 }
                 else
+                {
+                    WasAvailable = false;
                     Log.Debug("URBE is unavailable");
+                }
             }
             catch (WebException)
             {

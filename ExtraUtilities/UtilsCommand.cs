@@ -27,10 +27,19 @@ namespace ExtraUtilities
 
         public async Task<(string Result, bool Hold)> Action(BotCommandArguments args)
         {
+            if (args.Arguments.Length < 2)
+                return ("Not enough arguments", false);
             if (args.Arguments[1] == "getlogchat")
             {
-                var chat = await OutputBot.Client.GetChatAsync(Settings<WatcherSettings>.Current.LogChatId);
-                return (chat.InviteLink, false);
+                try
+                {
+                    var chat = await OutputBot.Client.GetChatAsync(Settings<WatcherSettings>.Current.LogChatId);
+                    return (chat.InviteLink, false);
+                }
+                catch(Exception e)
+                {
+                    return (e.Message, false);
+                }
             }
 
             return ("Unknown option", false);

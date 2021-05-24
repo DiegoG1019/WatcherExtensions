@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaWatchers", "MediaWatch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtraUtilities", "ExtraUtilities\ExtraUtilities.csproj", "{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiegoG.TelegramBot", "..\DGUtilities\DiegoG.TelegramBot\DiegoG.TelegramBot.csproj", "{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

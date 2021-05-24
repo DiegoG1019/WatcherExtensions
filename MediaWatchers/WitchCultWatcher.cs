@@ -41,7 +41,7 @@ namespace DiegoG.WebWatcher
                 string? latest = null;
                 Stack<string> Stack = new();
 
-                for (int i = 0; ; i++) 
+                for (int i = 0; i < 5; i++) 
                 {
                     var r = sidebar
                     .ChildNodes[i]
@@ -68,12 +68,19 @@ namespace DiegoG.WebWatcher
 
                     if (title == LastUpload)
                     {
-                        Log.Information("Succesfully checked WitchCultTranslations.");
+                        Log.Information("Succesfully checked WitchCultTranslations");
                         break;
                     }
 
                     if (i == 0)
                         latest = title;
+
+                    if (i >= 5)
+                    {
+                        Log.Information("Last post was never found, uploading as is");
+                        Stack.Push("Too many posts! Check them out at [*WitchCultTranslations*](https://witchculttranslation.com/)");
+                        break;
+                    }
 
                     Log.Information("New upload from WitchCultTranslations detected, notifying");
                     Stack.Push($"New Upload: [*{title}*]({link})");
