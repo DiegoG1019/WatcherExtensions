@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebWatcher\WebWatcher\WebWatcher.csproj" />
+    <PackageReference Include="DiegoG.WebWatcherLibrary" Version="1.0.5" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
   </ItemGroup>
 
 </Project>

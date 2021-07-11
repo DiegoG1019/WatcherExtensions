@@ -5,15 +5,11 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrbeWatcher", "UrbeWatcher\UrbeWatcher.csproj", "{A9FC05CC-9C4E-480F-B031-8B3D46BBEFA9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebWatcher", "..\WebWatcher\WebWatcher\WebWatcher.csproj", "{4892CDFB-3119-463E-A46A-E25540A4013E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerWatchers", "ServerWatchers\ServerWatchers.csproj", "{AFC78BDB-7CC0-4F95-AFA2-3DFFCAC9A5E4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaWatchers", "MediaWatchers\MediaWatchers.csproj", "{BA81DB6B-D406-4385-801E-0EEF3F1E0227}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtraUtilities", "ExtraUtilities\ExtraUtilities.csproj", "{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiegoG.TelegramBot", "..\DGUtilities\DiegoG.TelegramBot\DiegoG.TelegramBot.csproj", "{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +21,6 @@ Global
 		{A9FC05CC-9C4E-480F-B031-8B3D46BBEFA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9FC05CC-9C4E-480F-B031-8B3D46BBEFA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9FC05CC-9C4E-480F-B031-8B3D46BBEFA9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4892CDFB-3119-463E-A46A-E25540A4013E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4892CDFB-3119-463E-A46A-E25540A4013E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4892CDFB-3119-463E-A46A-E25540A4013E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4892CDFB-3119-463E-A46A-E25540A4013E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AFC78BDB-7CC0-4F95-AFA2-3DFFCAC9A5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AFC78BDB-7CC0-4F95-AFA2-3DFFCAC9A5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC78BDB-7CC0-4F95-AFA2-3DFFCAC9A5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,10 +33,6 @@ Global
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A0D81D2-7AA4-488A-A04E-807EC089C2AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1B6B583-0E0B-409E-A404-6BEB233EE8E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

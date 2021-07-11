@@ -75,7 +75,7 @@ namespace DiegoG.WebWatcher
                             {
                                 Log.Debug($"Found chapter: {chap} of {kv.Key}, downloading");
                                 DownloadMagnet(new(kv.Key, chap, links.Descendants().First(c => c.InnerText == "Magnet").InnerText));
-                                OutputBot.SendTextMessage(EraiRawsChatID, $"Uploaded {kv.Key} - {chap}");
+                                OutBot.EnqueueAction(b => b.SendTextMessageAsync(EraiRawsChatID, $"Uploaded {kv.Key} - {chap}"));
                             }
                         }
                     }

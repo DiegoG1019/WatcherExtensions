@@ -1,4 +1,5 @@
-﻿using DiegoG.TelegramBot.Types;
+﻿using DiegoG.TelegramBot;
+using DiegoG.TelegramBot.Types;
 using DiegoG.Utilities.Settings;
 using DiegoG.WebWatcher;
 using System;
@@ -25,6 +26,8 @@ namespace ExtraUtilities
 
         public string Alias => null;
 
+        public BotCommandProcessor Processor { get; set; }
+
         public async Task<(string Result, bool Hold)> Action(BotCommandArguments args)
         {
             if (args.Arguments.Length < 2)
@@ -33,7 +36,7 @@ namespace ExtraUtilities
             {
                 try
                 {
-                    var chat = await OutputBot.Client.GetChatAsync(Settings<WatcherSettings>.Current.LogChatId);
+                    var chat = await OutBot.EnqueueFunc(b => b.GetChatAsync(Settings<WatcherSettings>.Current.LogChatId));
                     return (chat.InviteLink, false);
                 }
                 catch(Exception e)

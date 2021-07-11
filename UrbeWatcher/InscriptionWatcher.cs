@@ -35,7 +35,7 @@ namespace UrbeWatcher
                 {
                     Log.Debug("Urbe is available");
                     WasAvailable = true;
-                    OutputBot.SendTextMessage(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now:g}");
+                    OutBot.EnqueueAction(b => b.SendTextMessageAsync(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now:g}"));
                 }
                 else
                 {

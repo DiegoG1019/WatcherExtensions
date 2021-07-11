@@ -93,8 +93,8 @@ namespace DiegoG.WebWatcher
                     Serialization.Serialize.Json(LastUpload, LastPostDir, LastPostFile);
                 }
 
-                while(Stack.Count > 0)
-                    OutputBot.SendTextMessage(WitchCultChatID, Stack.Pop(), Telegram.Bot.Types.Enums.ParseMode.MarkdownV2);
+                while (Stack.Count > 0)
+                    OutBot.EnqueueAction(b => b.SendTextMessageAsync(WitchCultChatID, Stack.Pop(), Telegram.Bot.Types.Enums.ParseMode.MarkdownV2));
             }
             catch (WebException)
             {
