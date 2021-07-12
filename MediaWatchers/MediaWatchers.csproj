@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DiegoG.WebWatcherLibrary" Version="1.0.5" />
+    <PackageReference Include="DiegoG.WebWatcherLibrary" Version="1.0.6" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
   </ItemGroup>
 

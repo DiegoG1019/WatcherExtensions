@@ -19,7 +19,8 @@ namespace ExtraUtilities
         public IEnumerable<(string Option, string Explanation)> HelpOptions { get; } = new[]
         {
             ("option","getlogchat"),
-            ("/utils getlogchat", "Attempts to obtain an invite link to the log chat")
+            ("/utils getlogchat", "Attempts to obtain an invite link to the log chat"),
+            ("/utils apisat", "Gets or Sets the API Saturation limit for the Message Queue. Lower values help prevent API Requests exception, but result in fewer messages sent at a time")
         };
 
         public string Trigger => "/utils";
@@ -45,6 +46,19 @@ namespace ExtraUtilities
                 }
             }
 
+            if(args.Arguments[1] == "apisat")
+            {
+                if(args.Arguments.Length > 2)
+                {
+                    if (int.TryParse(args.Arguments[2], out var result) && result > 0)
+                    {
+                        Processor.MessageQueue.ApiSaturationLimit = result;
+                        return ($"API Saturation Limit set to {result}", false);
+                    }
+                    return ($"Invalid value, please write a decimal number between 0 and {int.MaxValue}", false);
+                }
+                return ($"The API Saturation Limit is currently set to {Processor.MessageQueue.ApiSaturationLimit}", false);
+            }
             return ("Unknown option", false);
         }
 
