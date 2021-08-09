@@ -13,16 +13,7 @@ namespace DiegoG.WebWatcher
         public event PropertyChangedEventHandler? PropertyChanged;
         public string SettingsType => "Erai-raws Watcher Settings";
         public ulong Version => 0;
-        private static string RSSFeedLink = "https://beta.erai-raws.info/feed/?res=720p&type=magnet&subs[]=us";
 
-        /// <summary>
-        /// A string to format. Must contain "{magnetlink}", and "{directoryname}"
-        /// </summary>
-        public string StartTorrentCommand { get; set; } = "transmission-cli -ep -w {directoryname} {magnetlink}";
-
-        /// <summary>
-        /// To be replaced in StartTorrentCommand as {directoryname}
-        /// </summary>
-        public string TorrentDirectory { get; set; } = "~/autotorrents";
+        public List<string> MatchPatterns { get; set; }
     }
 }

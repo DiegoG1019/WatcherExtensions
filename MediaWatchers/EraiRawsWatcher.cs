@@ -6,131 +6,137 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using DiegoG.TelegramBot;
 using DiegoG.Utilities;
 using DiegoG.Utilities.IO;
 using DiegoG.Utilities.Settings;
 using HtmlAgilityPack;
+using RssFeedParser;
+using RssFeedParser.Models;
 using Serilog;
 
+#nullable enable
 namespace DiegoG.WebWatcher
 {
-    //[Watcher]
+    [Watcher]
     public class EraiRawsWatcher : IWebWatcher
     {
-        private struct DownloadBuffer
-        {
-            public string Name { get; private set; }
-            public int Episode { get; private set; }
-            public string Link { get; private set; }
-            public DownloadBuffer(string name, int episode, string link)
-            {
-                Name = name;
-                Episode = episode;
-                Link = link;
-            }
-        }
-
+        private const string RSSFeedLink = "https://beta.erai-raws.info/feed/?res=720p&type=magnet&subs[]=us";
+        
         private const long EraiRawsChatID = -1001267384658;
 
         public TimeSpan Interval { get; } = TimeSpan.FromHours(.5);
 
         public string Name => "EraiRawsWatcher";
 
-        static public readonly List<Process> TorrentProcesses = new();
-        public Dictionary<string, int> LatestUploads;
+        public RssFeedArticle? LastPost { get; private set; }
+        
+        private FeedParser RssFeedParser;
+        public Task<RssFeed> ParseFeed()
+            => RssFeedParser.ParseFeed(RSSFeedLink);
+
 
         public async Task Check()
         {
-            AsyncTaskManager tasks = new();
-            foreach (var kv in LatestUploads)
-                tasks.Run(() =>
-                {
-                    try
-                    {
-                        Log.Information($"Scraping {kv.Key}");
-                        using StreamReader sR = new(WebRequest.Create(kv.Key).GetResponse().GetResponseStream());
-                        var doc = new HtmlDocument();
-                        doc.LoadHtml(sR.ReadToEnd());
-
-                        var menu = doc.DocumentNode.Descendants("div");
-                        var m1 = menu.First(c => c.HasClass("col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 posmain h-episodes show-episodes"));
-                        var m2 = m1.Descendants().Where(n => n.Name == "article").Select(c => c.FirstChild);
-
-                        Log.Debug($"Reviewing each of the articles in {kv.Key}");
-
-                        foreach(var n in menu)
-                        {
-                            var names = n.FirstChild;
-                            var links = n.ChildNodes.ElementAt(2);
-
-                            var chap = int.Parse(names.FirstChild
-                            .FirstChild
-                            .Descendants("font")
-                            .First(c => c.HasClass("aa_ss_ops"))
-                            .InnerText);
-
-                            if (chap > kv.Value)
-                            {
-                                Log.Debug($"Found chapter: {chap} of {kv.Key}, downloading");
-                                DownloadMagnet(new(kv.Key, chap, links.Descendants().First(c => c.InnerText == "Magnet").InnerText));
-                                OutBot.EnqueueAction(b => b.SendTextMessageAsync(EraiRawsChatID, $"Uploaded {kv.Key} - {chap}"));
-                            }
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        Log.Error($"Failed to check latest upload of Erai-raws: {kv.Key}. {e.GetType().Name}::{e.Message}");
-                    }
-                });
-
-            AsyncTaskManager processWatcherTasks = new();
-
-            for(int i = 0; i < TorrentProcesses.Count; i++)
+            if(Settings<EraiRawsWatcherSettings>.Current.MatchPatterns.Count is 0)
             {
-                TorrentProcesses[i].StandardOutput.ReadToEnd().Contains("Seeding");
-                TorrentProcesses[i].Close();
-                TorrentProcesses[i].TryDispose();
-            }
-
-            await tasks;
-        }
-
-        private static void DownloadMagnet(DownloadBuffer download)
-        {
-            //var settings = Settings<EraiRawsWatcherSettings>.Current;
-
-            //TorrentProcesses.Add(Process.Start(settings.StartTorrentCommand
-            //    .Replace("{directoryname}", settings.TorrentDirectory)
-            //    .Replace("{magnetlink}", download.Link)));
-        }
-
-        public Task FirstCheck() => Check();
-
-        readonly static string LastPostDir = Directories.InData("ER");
-        readonly static string LastPostFile = "lastposts";
-        public EraiRawsWatcher()
-        {
-            try
-            {
-                LatestUploads = Serialization.Deserialize<Dictionary<string, int>>.Json(LastPostDir, LastPostFile);
+                Log.Warning("Erai Raws patterns for matching series is empty, skipping Check procedure");
                 return;
             }
-            catch (Exception)
-            {
-                Directory.CreateDirectory(LastPostDir);
 
-                LatestUploads = new()
+            int i = 0;
+            Log.Information("Parsing Erai Raws Feed");
+            
+            var articles = (await ParseFeed()).Articles;
+
+            var lastpost = articles.First();
+
+            AsyncTaskManager tasks = new();
+
+            foreach (var article in articles) 
+                try
                 {
-                    { "https://www.erai-raws.info/anime-list/boku-no-hero-academia-5th-season/", 4 },
-                    { "https://www.erai-raws.info/anime-list/subarashiki-kono-sekai-the-animation/", 0 },
-                    { "https://www.erai-raws.info/anime-list/ijiranaide-nagatoro-san/", 0 }
-                };
+                    Log.Information($"Reviewing article {++i}: {article.Title}");
 
-                Serialization.Serialize.Json(LatestUploads, LastPostDir, LastPostFile);
-            }
+                    Log.Debug($"Reviewing data in article {i}");
 
+                    if (LastPost is not null && article.Published == LastPost.Published && article.Title == LastPost.Title)
+                    {
+                        Log.Information($"Nothing new after article {i}: {article.Title}");
+                        break;
+                    }
+
+                    try
+                    {
+                        List<RssFeedArticle> relevantArticles = new();
+
+                        foreach (var pattern in Settings<EraiRawsWatcherSettings>.Current.MatchPatterns)
+                            tasks.Run(async () => 
+                            {
+                                var pat = pattern;
+                                var cancel = new CancellationTokenSource();
+                                await Task.Run(() => Regex.IsMatch(article.Title, pat, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(10)), cancel.Token).AwaitWithTimeout(
+                                    10000,
+                                    () =>
+                                    {
+                                        lock (relevantArticles)
+                                            relevantArticles.Add(article);
+                                    },
+                                    () =>
+                                    {
+                                        Log.Error($"Regex pattern {pat} timed out with title {article.Title}");
+                                        cancel.Cancel();
+                                    }
+                                    );
+                            });
+
+                        await tasks;
+
+                        foreach (var art in relevantArticles)
+                            OutBot.EnqueueAction(b => b.SendTextMessageAsync(-1001526952787, $"**{art.Title}** @ {art.Published:g}\n-> [Magnet]({art.Link})"));
+
+                        Log.Information("Finished processing RSS feed data");
+                    }
+                    catch
+                    {
+                        Log.Error("One of the regex patterns timed out. Please verify the patterns");
+                        throw;
+                    }
+                    finally
+                    {
+                        tasks.Clear();
+                    }
+
+                    await Task.Delay(50);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Failed to check latest upload of Erai-raws: {e.GetType().Name}::{e.Message}");
+                    break;
+                }
+
+            Log.Debug("Updating LastPost");
+            LastPost = lastpost;
+            await Serialization.Serialize.JsonAsync(LastPost, LastPostDir, LastPostFile);
+        }
+
+        public async Task FirstCheck()
+        {
+            RssFeedParser = new FeedParser();
+
+            Directory.CreateDirectory(LastPostDir);
+            if (File.Exists(Path.Combine(LastPostDir, LastPostFile)))
+                LastPost = await Serialization.Deserialize<RssFeedArticle>.JsonAsync(LastPostDir, LastPostFile);
+
+            await Check();
+        }
+
+        readonly static string LastPostDir = Directories.InData("EraiRaws");
+        readonly static string LastPostFile = "lastpost";
+        public EraiRawsWatcher()
+        {
             Settings<EraiRawsWatcherSettings>.Initialize(Directories.Configuration, "erw_config.cfg");
         }
     }

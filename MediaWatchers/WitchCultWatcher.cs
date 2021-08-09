@@ -30,7 +30,7 @@ namespace DiegoG.WebWatcher
             {
                 Log.Debug("Getting Web Response from WitchCultTranslations");
                 using StreamReader sR = new(WebRequest.Create("https://witchculttranslation.com/").GetResponse().GetResponseStream());
-                var doc = new HtmlDocument();
+                var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(sR.ReadToEnd());
 
                 var sidebar = doc.DocumentNode.Descendants("ul")
