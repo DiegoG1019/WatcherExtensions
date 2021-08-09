@@ -16,33 +16,35 @@ namespace ExtraUtilities
 
         public string HelpUsage => "/utils [option] (...)";
 
-        public IEnumerable<(string Option, string Explanation)> HelpOptions { get; } = new[]
+        public IEnumerable<OptionDescription> HelpOptions { get; } = new OptionDescription[]
         {
-            ("option","getlogchat"),
-            ("/utils getlogchat", "Attempts to obtain an invite link to the log chat"),
-            ("/utils apisat", "Gets or Sets the API Saturation limit for the Message Queue. Lower values help prevent API Requests exception, but result in fewer messages sent at a time")
+            new("option","getlogchat"),
+            new("/utils getlogchat", "Attempts to obtain an invite link to the log chat"),
+            new("/utils apisat", "Gets or Sets the API Saturation limit for the Message Queue. Lower values help prevent API Requests exception, but result in fewer messages sent at a time")
         };
 
         public string Trigger => "/utils";
 
         public string Alias => null;
 
-        public BotCommandProcessor Processor { get; set; }
+        public TelegramBotCommandClient Processor { get; set; }
 
-        public async Task<(string Result, bool Hold)> Action(BotCommandArguments args)
+        public async Task<CommandResponse> Action(BotCommandArguments args)
         {
+            var m = args.Message;
+
             if (args.Arguments.Length < 2)
-                return ("Not enough arguments", false);
+                return new(m, false, "Not enough arguments");
             if (args.Arguments[1] == "getlogchat")
             {
                 try
                 {
                     var chat = await OutBot.EnqueueFunc(b => b.GetChatAsync(Settings<WatcherSettings>.Current.LogChatId));
-                    return (chat.InviteLink, false);
+                    return new(m, false, chat.InviteLink);
                 }
                 catch(Exception e)
                 {
-                    return (e.Message, false);
+                    return new(m, false, e.Message);
                 }
             }
 
@@ -53,16 +55,16 @@ namespace ExtraUtilities
                     if (int.TryParse(args.Arguments[2], out var result) && result > 0)
                     {
                         Processor.MessageQueue.ApiSaturationLimit = result;
-                        return ($"API Saturation Limit set to {result}", false);
+                        return new(m, false, $"API Saturation Limit set to {result}");
                     }
-                    return ($"Invalid value, please write a decimal number between 0 and {int.MaxValue}", false);
+                    return new(m, false, $"Invalid value, please write a decimal number between 0 and {int.MaxValue}");
                 }
-                return ($"The API Saturation Limit is currently set to {Processor.MessageQueue.ApiSaturationLimit}", false);
+                return new(m, false, $"The API Saturation Limit is currently set to {Processor.MessageQueue.ApiSaturationLimit}");
             }
-            return ("Unknown option", false);
+            return new(m, false, "Unknown option");
         }
 
-        public Task<(string Result, bool Hold)> ActionReply(BotCommandArguments args)
+        public Task<CommandResponse> ActionReply(BotCommandArguments args)
         {
             throw new NotImplementedException();
         }
