@@ -14,6 +14,7 @@ namespace DiegoG.WebWatcher
         public string SettingsType => "Erai-raws Watcher Settings";
         public ulong Version => 0;
 
+        public long ChatId { get; set; }
         public List<string> MatchPatterns { get; set; }
     }
 }

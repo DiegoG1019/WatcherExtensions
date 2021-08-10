@@ -25,8 +25,6 @@ namespace DiegoG.WebWatcher
     {
         private const string RSSFeedLink = "https://beta.erai-raws.info/feed/?res=720p&type=magnet&subs[]=us";
         
-        private const long EraiRawsChatID = -1001267384658;
-
         public TimeSpan Interval { get; } = TimeSpan.FromHours(.5);
 
         public string Name => "EraiRawsWatcher";
@@ -43,6 +41,12 @@ namespace DiegoG.WebWatcher
             if(Settings<EraiRawsWatcherSettings>.Current.MatchPatterns.Count is 0)
             {
                 Log.Warning("Erai Raws patterns for matching series is empty, skipping Check procedure");
+                return;
+            }
+
+            if(Settings<EraiRawsWatcherSettings>.Current.ChatId is 0)
+            {
+                Log.Warning("Erai Raws ChatId is 0, skipping Check procedure");
                 return;
             }
 
@@ -94,8 +98,9 @@ namespace DiegoG.WebWatcher
 
                         await tasks;
 
+                        var id = Settings<EraiRawsWatcherSettings>.Current.ChatId;
                         foreach (var art in relevantArticles)
-                            OutBot.EnqueueAction(b => b.SendTextMessageAsync(-1001526952787, $"**{art.Title}** @ {art.Published:g}\n-> [Magnet]({art.Link})"));
+                            OutBot.EnqueueAction(b => b.SendTextMessageAsync(id, $"**{art.Title}** @ {art.Published:g}\n-> [Magnet]({art.Link})"));
 
                         Log.Information("Finished processing RSS feed data");
                     }
