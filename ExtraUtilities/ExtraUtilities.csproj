@@ -8,4 +8,8 @@
     <PackageReference Include="DiegoG.WebWatcherLibrary" Version="1.0.12" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) equ Release (copy $(OutDir)ExtraUtilities.dll $(ProjDir)..\DLLOut)" />
+  </Target>
+
 </Project>
