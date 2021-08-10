@@ -15,6 +15,6 @@ namespace DiegoG.WebWatcher
         public ulong Version => 0;
 
         public long ChatId { get; set; }
-        public List<string> MatchPatterns { get; set; }
+        public List<string> MatchPatterns { get; set; } = new();
     }
 }
