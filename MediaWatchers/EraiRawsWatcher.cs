@@ -76,25 +76,25 @@ namespace DiegoG.WebWatcher
                     {
                         List<RssFeedArticle> relevantArticles = new();
 
+                        var cancel = new CancellationTokenSource();
                         foreach (var pattern in Settings<EraiRawsWatcherSettings>.Current.MatchPatterns)
-                            tasks.Run(async () => 
+                            if (await Task.Run(() => Regex.IsMatch(article.Title, pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(10)), cancel.Token).AwaitWithTimeout(
+                                1000,
+                                ifError: () =>
+                                {
+                                    Log.Error($"Regex pattern {pattern} timed out with title {article.Title}");
+                                    cancel.Cancel();
+                                }
+                                ))
                             {
-                                var pat = pattern;
-                                var cancel = new CancellationTokenSource();
-                                await Task.Run(() => Regex.IsMatch(article.Title, pat, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(10)), cancel.Token).AwaitWithTimeout(
-                                    10000,
-                                    () =>
-                                    {
-                                        lock (relevantArticles)
-                                            relevantArticles.Add(article);
-                                    },
-                                    () =>
-                                    {
-                                        Log.Error($"Regex pattern {pat} timed out with title {article.Title}");
-                                        cancel.Cancel();
-                                    }
-                                    );
-                            });
+                                Log.Information($"Found {article.Title} to be interesting");
+                                lock (relevantArticles)
+                                    relevantArticles.Add(article);
+                                goto Matched;
+                            }
+                        Log.Debug($"Ignoring {article.Title}");
+
+                    Matched:;
 
                         await tasks;
 
@@ -125,6 +125,7 @@ namespace DiegoG.WebWatcher
             Log.Debug("Updating LastPost");
             LastPost = lastpost;
             await Serialization.Serialize.JsonAsync(LastPost, LastPostDir, LastPostFile);
+            Log.Information("Finished processing RSS feed data");
         }
 
         public async Task FirstCheck()
