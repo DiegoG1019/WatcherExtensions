@@ -23,7 +23,7 @@ namespace DiegoG.WebWatcher
     [Watcher]
     public class EraiRawsWatcher : IWebWatcher
     {
-        private const string RSSFeedLink = "https://beta.erai-raws.info/feed/?res=720p&type=magnet&subs[]=us";
+        private const string RSSFeedLink = "https://beta.erai-raws.info/feed/?res=720p&type=torrent&subs[]=us";
         
         public TimeSpan Interval { get; } = TimeSpan.FromHours(.5);
 
