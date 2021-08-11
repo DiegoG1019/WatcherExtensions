@@ -16,6 +16,7 @@ using HtmlAgilityPack;
 using RssFeedParser;
 using RssFeedParser.Models;
 using Serilog;
+using Telegram.Bot.Types.Enums;
 
 #nullable enable
 namespace DiegoG.WebWatcher
@@ -100,9 +101,7 @@ namespace DiegoG.WebWatcher
 
                         var id = Settings<EraiRawsWatcherSettings>.Current.ChatId;
                         foreach (var art in relevantArticles)
-                            OutBot.EnqueueAction(b => b.SendTextMessageAsync(id, $"**{art.Title}** @ {art.Published:g}\n-> [Magnet]({art.Link})"));
-
-                        Log.Information("Finished processing RSS feed data");
+                            OutBot.EnqueueAction(b => b.SendTextMessageAsync(id, $"<strong>{art.Title}</strong> @ {art.Published:g}\n-&gt; <a href=\"{art.Link}\">Link</a>", ParseMode.Html));
                     }
                     catch
                     {
