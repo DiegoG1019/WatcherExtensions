@@ -35,12 +35,13 @@ namespace UrbeWatcher
                 {
                     Log.Debug("Urbe is available");
                     WasAvailable = true;
-                    OutBot.EnqueueAction(b => b.SendTextMessageAsync(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now:g}"));
+                    OutBot.EnqueueAction(b => b.SendTextMessageAsync(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now.ToUniversalTime():g}"));
                 }
                 else
                 {
                     WasAvailable = false;
                     Log.Debug("URBE is unavailable");
+                    OutBot.EnqueueAction(b => b.SendTextMessageAsync(ChannelID, $"URBE is no longer available:\n{DateTime.Now.ToUniversalTime():g}"));
                 }
             }
             catch (WebException)
