@@ -37,7 +37,7 @@ namespace UrbeWatcher
                     WasAvailable = true;
                     OutBot.EnqueueAction(b => b.SendTextMessageAsync(ChannelID, $"URBE is Alive!!: {UrbeURL}\n{DateTime.Now.ToUniversalTime():g}"));
                 }
-                else
+                else if (!checkingResponse.IsSuccessStatusCode && WasAvailable) 
                 {
                     WasAvailable = false;
                     Log.Debug("URBE is unavailable");
